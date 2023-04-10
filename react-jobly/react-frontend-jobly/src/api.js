@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// "TESTUSER TOKEN :   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTY4MDkwMTQxNH0.QyE-L-tjDdfVSpYOhy9H-UEJp7m1fi4FOvGI72jpjRo  ";
+
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 /** API Class.
@@ -40,7 +42,50 @@ class JoblyApi {
     let res = await this.request(`companies/${handle}`);
     return res.company;
   }
+  static async getAllCompanies() {
+    let res = await this.request(`companies`);
 
+    return res.companies;
+  }
+
+  static async getJob(id) {
+    let res = await this.request(`jobs/${id}`);
+    return res;
+  }
+  static async getAllJobs() {
+    let res = await this.request(`jobs`);
+    console.log(res, "RESSS");
+    return res.data.response;
+  }
+  static async login(username, password) {
+    let res = await axios.post(`${BASE_URL}/auth/token`, {
+      username: username,
+      password: password,
+    });
+    console.log(res, "ress login");
+    return res;
+  }
+  static async getUser(username) {
+    let res = await axios.get(`${BASE_URL}/users/${username}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    console.log(res, "ress user");
+    return res;
+  }
+
+  static async signUp(username, password, firstName, lastName, email) {
+    let res = await axios.post(`${BASE_URL}/auth/register`, {
+      username,
+      password,
+      firstName,
+      lastName,
+      email,
+    });
+    console.log(res);
+    return res;
+  }
   // obviously, you'll add a lot here ...
 }
 
@@ -50,4 +95,4 @@ JoblyApi.token =
   "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
   "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
 
-("TESTUSER TOKEN :   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTY4MDkwMTQxNH0.QyE-L-tjDdfVSpYOhy9H-UEJp7m1fi4FOvGI72jpjRo  ");
+export default JoblyApi;
