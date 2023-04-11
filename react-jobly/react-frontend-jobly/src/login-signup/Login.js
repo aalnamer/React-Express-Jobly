@@ -8,7 +8,7 @@ function Login({ username, password }) {
   // useEffect(() => {
   //   async function loginUser() {
   //     let user = await JoblyApi.login("testuser", "password");
-  //     console.log(user);
+  //     (user);
   //   }
   //   loginUser();
   // });

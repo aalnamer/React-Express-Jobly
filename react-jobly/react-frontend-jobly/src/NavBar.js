@@ -5,6 +5,7 @@ import UserContext from "./context/UsersContext";
 
 function NavBar() {
   const storage = localStorage.getItem("username");
+
   const logout = () => {
     localStorage.clear();
     navigate("/");
@@ -12,17 +13,10 @@ function NavBar() {
 
   const navigate = useNavigate();
 
-  console.log(!storage);
   return (
     <nav className="navbar">
       <NavLink exact to={"/"}>
         Home
-      </NavLink>
-      <NavLink exact to={"/companies"}>
-        All Companies
-      </NavLink>
-      <NavLink exact to={"/jobs"}>
-        All Jobs
       </NavLink>
       {!storage ? (
         <nav className="log">
@@ -36,6 +30,12 @@ function NavBar() {
       ) : (
         <nav className="log">
           {" "}
+          <NavLink exact to={"/companies"}>
+            All Companies
+          </NavLink>
+          <NavLink exact to={"/jobs"}>
+            All Jobs
+          </NavLink>
           <NavLink exact to={"/profile"}>
             {storage}
           </NavLink>

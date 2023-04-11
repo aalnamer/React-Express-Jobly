@@ -54,7 +54,7 @@ class JoblyApi {
   }
   static async getAllJobs() {
     let res = await this.request(`jobs`);
-    console.log(res, "RESSS");
+
     return res.data.response;
   }
   static async login(username, password) {
@@ -62,7 +62,7 @@ class JoblyApi {
       username: username,
       password: password,
     });
-    console.log(res, "ress login");
+
     return res;
   }
   static async getUser(username) {
@@ -71,7 +71,7 @@ class JoblyApi {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    console.log(res, "ress user");
+
     return res;
   }
 
@@ -83,9 +83,37 @@ class JoblyApi {
       lastName,
       email,
     });
-    console.log(res);
+
     return res;
   }
+  static async updateUser(username, firstName, lastName, email) {
+    let res = await axios.patch(
+      `${BASE_URL}/users/${username}`,
+      {
+        firstName,
+        lastName,
+        email,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    return res;
+  }
+
+  static async applyJob(username, id) {
+    let res = await axios.post(`${BASE_URL}/users/${username}/jobs/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    console.log(res, "api result apply job");
+    return res;
+  }
+
   // obviously, you'll add a lot here ...
 }
 
