@@ -8,12 +8,17 @@ import { useContext, useState } from "react";
 import UserContext from "./context/UsersContext";
 
 function App() {
+  const [currentUser, setCurrentUser] = useState();
   return (
     <div className="App">
-      <BrowserRouter>
-        <NavBar />
-        <Route />
-      </BrowserRouter>
+      <header>
+        <BrowserRouter>
+          <UserContext.Provider value={{ currentUser, setCurrentUser }}>
+            <NavBar />
+            <Route />
+          </UserContext.Provider>
+        </BrowserRouter>
+      </header>
     </div>
   );
 }

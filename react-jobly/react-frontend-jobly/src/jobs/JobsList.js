@@ -8,13 +8,14 @@ const BASE_URL = "http://localhost:3001/jobs";
 
 function JobList() {
   const user = localStorage.getItem("username");
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const data = useAxios(BASE_URL);
 
   const [search, setSearch] = useState("");
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -51,12 +52,13 @@ function JobList() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="list">
+        <br></br>
+        <div className="grid-container">
           {jobs
             .filter((job) => job.title.toLowerCase().includes(search))
             .map((job) => (
               <Link to={`/jobs/${job.id}`} key={job.id}>
-                <p>{job.title}</p>
+                <div className="grid-item">{job.title}</div>
               </Link>
             ))}
         </div>

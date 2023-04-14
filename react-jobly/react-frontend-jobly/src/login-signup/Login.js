@@ -4,14 +4,7 @@ import LoginForm from "./LoginForm";
 import JoblyApi from "../api";
 import UserContext from "../context/UsersContext";
 
-function Login({ username, password }) {
-  // useEffect(() => {
-  //   async function loginUser() {
-  //     let user = await JoblyApi.login("testuser", "password");
-  //     (user);
-  //   }
-  //   loginUser();
-  // });
+function Login() {
   return (
     <div>
       <h1>Login!</h1>

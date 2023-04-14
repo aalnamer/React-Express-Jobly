@@ -1,28 +1,36 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Navigate, useNavigate, useParams, Link } from "react-router-dom";
+import React, { useRef, useState, useEffect, useContext } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import JoblyApi from "../api";
 import "./CompanyDetail.css";
 import UserContext from "../context/UsersContext";
 
-function CompanyDetail({ cantFind }) {
-  const user = localStorage.getItem("username");
-  const context = useContext(UserContext);
-  console.log(context, "context data");
+function CompanyDetail({ id }) {
+  const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
   const { handle } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [companyDetail, setCompanyDetail] = useState();
+  const [jobID, setJobID] = useState();
+
+  const handleSubmit = (apply) => {
+    console.log(apply);
+    id({ id: apply });
+  };
 
   useEffect(() => {
     async function getCompanies() {
-      let company = await JoblyApi.getCompany(handle);
-      setCompanyDetail(company);
-      setIsLoading(false);
+      try {
+        let company = await JoblyApi.getCompany(handle);
+        setCompanyDetail(company);
+        setIsLoading(false);
+      } catch (err) {
+        navigate("/notfound");
+      }
     }
     getCompanies();
   }, []);
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -49,7 +57,7 @@ function CompanyDetail({ cantFind }) {
 
   const jobs = companyDetail.jobs;
   const jobData = jobs.map((job) => (
-    <div className="grid-container">
+    <div key={job.id} className="grid-container">
       <div className="head">
         ID
         <div className="grid-item-1"> {job.id}</div>
@@ -72,10 +80,18 @@ function CompanyDetail({ cantFind }) {
           Job Detail
         </Link>
       </div>
-      {context.data.user.applications.includes(job.id) ? (
-        <div style={{ color: "green" }}>Applied</div>
+      {currentUser.data.user.applications.includes(job.id) ? (
+        <div style={{ color: "green" }}>Applied </div>
       ) : (
-        <div>Apply</div>
+        <button
+          value={job.id}
+          onClick={() => {
+            handleSubmit(job.id);
+          }}
+        >
+          {" "}
+          Apply
+        </button>
       )}
     </div>
   ));

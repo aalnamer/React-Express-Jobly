@@ -3,23 +3,41 @@ import { useNavigate } from "react-router-dom";
 import useFields from "../hooks/useFields";
 import UserContext from "../context/UsersContext";
 
-function EditProfileForm({ editUser }) {
+function EditProfileForm({ editUser, errorMessage }) {
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const storage = localStorage.getItem("username");
   const navigate = useNavigate();
-  const userData = useContext(UserContext);
-  const user = userData.data.user;
 
   const [formData, handleChange] = useFields({
-    username: user.username,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
+    username: "",
+    firstName: "",
+    lastName: "",
+    email: "",
   });
 
+  if (currentUser === undefined) {
+    return (
+      <div>
+        <h1>Please Sign in first</h1>
+        <p>
+          <button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Go Back
+          </button>
+        </p>
+      </div>
+    );
+  }
+
+  const user = currentUser.data.user;
+  console.log(user.username);
   const handleSubmit = (e) => {
     e.preventDefault();
     editUser({
-      username: formData.username,
+      username: user.username,
       password: formData.password,
       firstName: formData.firstName,
       lastName: formData.lastName,
@@ -71,7 +89,7 @@ function EditProfileForm({ editUser }) {
         </p>
 
         <p>
-          <button>Register</button>
+          <button>Edit</button>
         </p>
         <p>
           <button

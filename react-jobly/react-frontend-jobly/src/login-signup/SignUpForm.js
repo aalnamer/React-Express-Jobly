@@ -1,18 +1,38 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import useFields from "../hooks/useFields";
+import UserContext from "../context/UsersContext";
 
-function SignUpForm({ signUpUser }) {
-  const history = useNavigate();
+function SignUpForm({ signUpUser, currentSignUpError }) {
+  const { currentUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
 
   const [formData, handleChange] = useFields({
-    username: "test",
-    firstName: "sample",
-    lastName: "first",
-    password: "password",
-    email: "email@email.com",
+    username: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    email: "",
   });
 
+  if (currentUser != undefined) {
+    return (
+      <h1>
+        {" "}
+        Oops, that page isn't Avaliable
+        <div>
+          <button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Go Back
+          </button>
+        </div>
+      </h1>
+    );
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
     signUpUser({
@@ -22,12 +42,14 @@ function SignUpForm({ signUpUser }) {
       lastName: formData.lastName,
       email: formData.email,
     });
-    history("/");
+    navigate("/");
   };
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <p>
+        <div>
+          <h1> Sign Up Below! </h1>
+          <div style={{ color: "red" }}>{currentSignUpError}</div>
           <label>
             {" "}
             Username
@@ -36,9 +58,12 @@ function SignUpForm({ signUpUser }) {
               type="text"
               value={formData.username}
               onChange={handleChange}
+              required={true}
+              minLength={1}
+              maxLength={30}
             />
           </label>
-        </p>
+        </div>
         <p>
           <label>
             {" "}
@@ -48,6 +73,9 @@ function SignUpForm({ signUpUser }) {
               type="text"
               value={formData.firstName}
               onChange={handleChange}
+              required={true}
+              minLength={5}
+              maxLength={20}
             />
           </label>
         </p>
@@ -60,6 +88,9 @@ function SignUpForm({ signUpUser }) {
               type="text"
               value={formData.lastName}
               onChange={handleChange}
+              required={true}
+              minLength={1}
+              maxLength={30}
             />
           </label>
         </p>
@@ -71,6 +102,9 @@ function SignUpForm({ signUpUser }) {
             type="password"
             value={formData.password}
             onChange={handleChange}
+            required={true}
+            minLength={6}
+            maxLength={60}
           />
         </label>
         <p>
@@ -82,6 +116,7 @@ function SignUpForm({ signUpUser }) {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              required={true}
             />
           </label>
         </p>

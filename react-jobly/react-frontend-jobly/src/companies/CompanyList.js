@@ -7,12 +7,13 @@ import UserContext from "../context/UsersContext";
 const BASE_URL = "http://localhost:3001/companies";
 
 const CompanyList = () => {
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
   const user = localStorage.getItem("username");
   const data = useAxios(BASE_URL);
   const [search, setSearch] = useState("");
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -48,13 +49,15 @@ const CompanyList = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        {companies
-          .filter((company) => company.name.toLowerCase().includes(search))
-          .map((company) => (
-            <Link to={`/companies/${company.handle}`} key={company.handle}>
-              <p>{company.name}</p>
-            </Link>
-          ))}
+        <div className="grid-container">
+          {companies
+            .filter((company) => company.name.toLowerCase().includes(search))
+            .map((company) => (
+              <Link to={`/companies/${company.handle}`} key={company.handle}>
+                <div className="grid-item">{company.name}</div>
+              </Link>
+            ))}
+        </div>
       </div>
     </div>
   );

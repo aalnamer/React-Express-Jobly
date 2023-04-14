@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import JoblyApi from "../api";
+import UserContext from "../context/UsersContext";
 
 function JobDetail({ cantFind }) {
+  const { currentUser, setCurrentUser } = useContext(UserContext);
   const user = localStorage.getItem("username");
   const navigate = useNavigate();
   const { id } = useParams();
@@ -11,16 +13,19 @@ function JobDetail({ cantFind }) {
 
   useEffect(() => {
     async function getCompanies() {
-      let jobData = await JoblyApi.getJob(id);
-      let job = jobData.job;
-      setJobDetail(job);
-      setIsLoading(false);
+      try {
+        let jobData = await JoblyApi.getJob(id);
+        let job = jobData.job;
+        setJobDetail(job);
+        setIsLoading(false);
+      } catch (err) {
+        navigate("/notfound");
+      }
     }
     getCompanies();
   }, []);
 
-  if (!jobDetail) return <Navigate to={cantFind} />;
-  if (!user) {
+  if (!currentUser) {
     return (
       <div>
         <h1>Please Sign in first</h1>

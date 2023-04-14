@@ -1,28 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../context/UsersContext";
-import JoblyApi from "../api";
+import "./Profile.css";
 
 function Profile() {
+  const { currentUser } = useContext(UserContext);
+  console.log(currentUser === undefined);
+  console.log(currentUser, "DATAA FROM PROFILE");
+
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState();
-  const currentUser = localStorage.getItem("username");
-  const user = useContext(UserContext);
-  console.log(user, "user data");
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function getData() {
-      let userProfile = await JoblyApi.getUser(currentUser);
-      setUserProfile(userProfile);
-      setIsLoading(false);
-    }
-
-    getData();
-  }, []);
-
-  if (!user) {
+  if (currentUser === undefined) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -39,34 +27,34 @@ function Profile() {
     );
   }
 
-  if (isLoading) {
-    return <div>Loading ... </div>;
-  }
-
-  const userData = userProfile.data.user;
-  const userApplications = userProfile.data.user.applications;
-  console.log(userProfile);
-  console.log(userProfile.data.user.applications);
+  const currentData = currentUser.data.user;
+  console.log(currentData, "CURRENT DATA");
 
   return (
     <div>
-      <h1>Welcome, {userData.firstName} </h1>
-      <p>
-        Full Name: {userData.firstName} {userData.lastName}
-      </p>
-      <p>Username: {userData.username}</p>
-      <p>Email: {userData.email}</p>
-      <p>
+      <h1>Welcome, {currentData.firstName} </h1>
+      <div>
+        Full Name: {currentData.firstName} {currentData.lastName}
+      </div>
+      <br></br>
+      <div>Username: {currentData.username}</div>
+      <br></br>
+      <div>Email: {currentData.email}</div>
+      <div>
+        <br></br>
         Current Applications:{" "}
-        {userApplications.map((job) => (
-          <p>
-            ID: {job}
-            <p>
-              <Link to={`/jobs/${job}`}>Details</Link>
-            </p>
-          </p>
-        ))}
-      </p>
+        <div className="grid-container">
+          {currentData.applications.map((job) => (
+            <div key={job}>
+              <br></br>
+              ID: {job}
+              <div className="grid-item">
+                <Link to={`/jobs/${job}`}>Details</Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       <button
         onClick={() => {
           navigate("/");
@@ -75,7 +63,8 @@ function Profile() {
         {" "}
         Go Back
       </button>
-      <p>
+      <div>
+        <br></br>
         <button
           onClick={() => {
             navigate("/profile/edit");
@@ -84,7 +73,7 @@ function Profile() {
           {" "}
           Edit Profile
         </button>
-      </p>
+      </div>
     </div>
   );
 }

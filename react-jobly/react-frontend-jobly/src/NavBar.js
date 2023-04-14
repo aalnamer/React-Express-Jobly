@@ -5,9 +5,11 @@ import UserContext from "./context/UsersContext";
 
 function NavBar() {
   const storage = localStorage.getItem("username");
-
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  console.log(currentUser, " NAVBAR");
   const logout = () => {
     localStorage.clear();
+    setCurrentUser();
     navigate("/");
   };
 
@@ -18,7 +20,7 @@ function NavBar() {
       <NavLink exact to={"/"}>
         Home
       </NavLink>
-      {!storage ? (
+      {currentUser === undefined ? (
         <nav className="log">
           <NavLink exact to={"/login"}>
             Login

@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Routes, Route, Redirect, BrowserRouter } from "react-router-dom";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./Home";
 import Companies from "./companies/Companies";
 import Jobs from "./jobs/Jobs";
-import Login from "./login-signup/Login";
-import SignUp from "./login-signup/Signup";
 import Profile from "./profile/Profile";
 import NotFound from "./NotFound";
 import JoblyApi from "./api";
@@ -17,39 +15,70 @@ import SignUpForm from "./login-signup/SignUpForm";
 import EditProfileForm from "./profile/ProfileEditForm";
 
 function SiteRoutes() {
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(true);
-  const [currentUser, setCurrentUser] = useState();
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const [currentError, setCurrentError] = useState();
+  const [currentSignUpError, setCurrentSignUpError] = useState();
+
   const [signUp, setSignUp] = useState();
   const [editUser, setEditUser] = useState();
+  const [jobID, setJobID] = useState();
 
   const effectRan = useRef(0);
   const signUpRan = useRef(0);
   const updateRan = useRef(0);
+  const applyRan = useRef(0);
+
+  // Use Effect for start up
+
+  useEffect(() => {
+    setIsLoading(false);
+
+    async function startUp() {
+      if (localStorage.username) {
+        let startingUser = await JoblyApi.getUser(
+          localStorage.getItem("username")
+        );
+        setCurrentUser(startingUser);
+        setIsLoading(false);
+      }
+    }
+    startUp();
+  }, []);
 
   // Use Effect for Logging In
 
   useEffect(() => {
-    setIsLoading(false);
-    effectRan.current = effectRan.current + 1;
-    if (effectRan.current === 3) {
+    effectRan.current += 1;
+    console.log(effectRan);
+    console.log(currentUser, "current user");
+    if (effectRan.current === 3 && !currentUser.data) {
       async function loginUser() {
-        let loginUser = await JoblyApi.login(
-          currentUser.username,
-          currentUser.password
-        );
+        try {
+          console.log("login user initalized");
+          let loginUser = await JoblyApi.login(
+            currentUser.username,
+            currentUser.password
+          );
 
-        localStorage.setItem("token", loginUser.data.token);
-        localStorage.setItem("username", currentUser.username);
-        let userInfo = await JoblyApi.getUser(currentUser.username);
-
-        setCurrentUser(userInfo);
-        setIsLoading(false);
+          localStorage.setItem("token", loginUser.data.token);
+          localStorage.setItem("username", currentUser.username);
+          let userInfo = await JoblyApi.getUser(currentUser.username);
+          console.log(effectRan);
+          effectRan.current = 0;
+          setCurrentUser(userInfo);
+          setIsLoading(false);
+        } catch (err) {
+          setCurrentUser();
+          setIsLoading(false);
+          setCurrentError("Invalid Username/Password");
+          effectRan.current = 1;
+          navigate("/login");
+        }
       }
       loginUser();
-
-      return () => {
-        effectRan.current = 1;
-      };
     }
   }, [currentUser]);
 
@@ -60,18 +89,24 @@ function SiteRoutes() {
     signUpRan.current = signUpRan.current + 1;
     if (signUpRan.current === 3) {
       async function signUpUser() {
-        let user = await JoblyApi.signUp(
-          signUp.username,
-          signUp.password,
-          signUp.firstName,
-          signUp.lastName,
-          signUp.email
-        );
+        try {
+          let user = await JoblyApi.signUp(
+            signUp.username,
+            signUp.password,
+            signUp.firstName,
+            signUp.lastName,
+            signUp.email
+          );
+          localStorage.setItem("token", user.data.token);
+          localStorage.setItem("username", signUp.username);
+          let userInfo = await JoblyApi.getUser(signUp.username);
 
-        setCurrentUser({
-          username: signUp.username,
-          password: signUp.password,
-        });
+          setCurrentUser(userInfo);
+        } catch (err) {
+          setCurrentUser();
+          setCurrentSignUpError("Invalid Form: Username/Email Taken");
+          navigate("/signup");
+        }
       }
       signUpUser();
       return () => {
@@ -93,7 +128,10 @@ function SiteRoutes() {
           editUser.lastName,
           editUser.email
         );
-        setEditUser(user);
+
+        let userInfo = await JoblyApi.getUser(editUser.username);
+
+        setCurrentUser(userInfo);
       }
       updateUser();
       return () => {
@@ -102,10 +140,41 @@ function SiteRoutes() {
     }
   }, [editUser]);
 
-  // Use Effect for updating profile
+  useEffect(() => {
+    setIsLoading(false);
+  });
+
+  // Use effect for setting job ID
+
+  useEffect(() => {
+    setIsLoading(false);
+    applyRan.current += 1;
+    if (applyRan.current === 3) {
+      async function applyForJob() {
+        try {
+          const username = currentUser.data.user.username;
+          const id = +jobID.id;
+
+          let job = await JoblyApi.applyJob(username, id);
+          let updateUser = await JoblyApi.getUser(username);
+
+          setCurrentUser(updateUser);
+          applyRan.current = 2;
+        } catch (err) {
+          navigate("/profile");
+        }
+      }
+      applyForJob();
+    }
+  }, [jobID]);
 
   if (isLoading) {
     return <p>Loading &hellip;</p>;
+  }
+
+  function handleID(id) {
+    console.log(id);
+    setJobID(id);
   }
 
   function handleLogin(newLogin) {
@@ -120,43 +189,48 @@ function SiteRoutes() {
   }
 
   return (
-    <UserContext.Provider value={currentUser}>
-      <Routes>
-        <Route exact path="/companies" element={<Companies />}></Route>
-        <Route
-          exact
-          path="/companies/:handle"
-          element={<CompanyDetail cantFind="/companies" />}
-        ></Route>
-        <Route exact path="/jobs" element={<Jobs />}></Route>
-        <Route
-          exact
-          path="/jobs/:id"
-          element={<JobDetail cantFind="/jobs" />}
-        ></Route>
-        <Route
-          exact
-          path="/login"
-          element={<LoginForm loginUser={handleLogin} />}
-        ></Route>
+    <Routes>
+      <Route exact path="/companies" element={<Companies />}></Route>
+      <Route
+        exact
+        path="/companies/:handle"
+        element={<CompanyDetail id={handleID} cantFind="/companies" />}
+      ></Route>
+      <Route exact path="/jobs" element={<Jobs />}></Route>
+      <Route
+        exact
+        path="/jobs/:id"
+        element={<JobDetail cantFind="/jobs" />}
+      ></Route>
+      <Route
+        exact
+        path="/login"
+        element={
+          <LoginForm loginUser={handleLogin} errorMessage={currentError} />
+        }
+      ></Route>
 
-        <Route
-          exact
-          path="/signup"
-          element={<SignUpForm signUpUser={handleSignUp} />}
-        ></Route>
+      <Route
+        exact
+        path="/signup"
+        element={
+          <SignUpForm
+            signUpUser={handleSignUp}
+            errorMessage={currentSignUpError}
+          />
+        }
+      ></Route>
 
-        <Route exact path="/profile" element={<Profile />}></Route>
-        <Route
-          exact
-          path="/profile/edit"
-          element={<EditProfileForm editUser={handleUpdate} />}
-        ></Route>
-        <Route exact path="/logout" element={<LogOut />}></Route>
-        <Route exact path="/" element={<Home />}></Route>
-        <Route path="/*" element={<NotFound />}></Route>
-      </Routes>
-    </UserContext.Provider>
+      <Route exact path="/profile" element={<Profile />}></Route>
+      <Route
+        exact
+        path="/profile/edit"
+        element={<EditProfileForm editUser={handleUpdate} />}
+      ></Route>
+      <Route exact path="/logout" element={<LogOut />}></Route>
+      <Route exact path="/" element={<Home />}></Route>
+      <Route exact path="/*" element={<NotFound />}></Route>
+    </Routes>
   );
 }
 

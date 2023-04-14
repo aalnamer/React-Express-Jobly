@@ -105,12 +105,7 @@ class JoblyApi {
   }
 
   static async applyJob(username, id) {
-    let res = await axios.post(`${BASE_URL}/users/${username}/jobs/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    console.log(res, "api result apply job");
+    const res = await this.request(`users/${username}/jobs/${id}`, {}, "post");
     return res;
   }
 

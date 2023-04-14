@@ -1,13 +1,37 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import useFields from "../hooks/useFields";
+import UserContext from "../context/UsersContext";
 
-function LoginForm({ loginUser }) {
-  const history = useNavigate();
+function LoginForm({ loginUser, errorMessage }) {
+  const { currentUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+
+  console.log(currentUser != undefined);
+
   const [formData, handleChange] = useFields({
     username: "",
     password: "",
   });
+
+  if (currentUser != undefined) {
+    return (
+      <h1>
+        {" "}
+        Oops, that page isn't Avaliable
+        <div>
+          <button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Go Back
+          </button>
+        </div>
+      </h1>
+    );
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,11 +39,12 @@ function LoginForm({ loginUser }) {
       username: formData.username,
       password: formData.password,
     });
-    history("/");
+    navigate("/");
   };
   return (
     <div>
       <h1>Login </h1>
+      <div style={{ color: "red" }}> {errorMessage} </div>
       <form onSubmit={handleSubmit}>
         <p>
           <label>
@@ -30,9 +55,11 @@ function LoginForm({ loginUser }) {
               type="text"
               value={formData.username}
               onChange={handleChange}
+              required={true}
             />
           </label>
         </p>
+
         <label>
           {" "}
           Password
@@ -41,6 +68,7 @@ function LoginForm({ loginUser }) {
             type="password"
             value={formData.password}
             onChange={handleChange}
+            required={true}
           />
         </label>
         <p>
