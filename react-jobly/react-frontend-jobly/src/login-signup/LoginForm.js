@@ -8,8 +8,6 @@ function LoginForm({ loginUser, errorMessage }) {
 
   const navigate = useNavigate();
 
-  console.log(currentUser != undefined);
-
   const [formData, handleChange] = useFields({
     username: "",
     password: "",

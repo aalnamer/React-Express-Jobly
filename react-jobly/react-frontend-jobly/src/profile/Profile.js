@@ -5,8 +5,6 @@ import "./Profile.css";
 
 function Profile() {
   const { currentUser } = useContext(UserContext);
-  console.log(currentUser === undefined);
-  console.log(currentUser, "DATAA FROM PROFILE");
 
   const navigate = useNavigate();
 
@@ -28,7 +26,6 @@ function Profile() {
   }
 
   const currentData = currentUser.data.user;
-  console.log(currentData, "CURRENT DATA");
 
   return (
     <div>

@@ -36,7 +36,7 @@ const CompanyList = () => {
   if (data.error) {
     return <div>Sorry, something went wrong </div>;
   }
-  console.log(data);
+
   const companies = data.response.data.companies;
 
   return (

@@ -4,7 +4,7 @@
 
 // function ApplyForJob({ id }) {
 //   const { currentUser, setCurrentUser } = useContext();
-//   console.log(currentUser);
+//
 //   const navigate = useNavigate();
 
 //   useEffect(() => {

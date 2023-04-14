@@ -52,12 +52,10 @@ function SiteRoutes() {
 
   useEffect(() => {
     effectRan.current += 1;
-    console.log(effectRan);
-    console.log(currentUser, "current user");
+
     if (effectRan.current === 3 && !currentUser.data) {
       async function loginUser() {
         try {
-          console.log("login user initalized");
           let loginUser = await JoblyApi.login(
             currentUser.username,
             currentUser.password
@@ -66,7 +64,7 @@ function SiteRoutes() {
           localStorage.setItem("token", loginUser.data.token);
           localStorage.setItem("username", currentUser.username);
           let userInfo = await JoblyApi.getUser(currentUser.username);
-          console.log(effectRan);
+
           effectRan.current = 0;
           setCurrentUser(userInfo);
           setIsLoading(false);
@@ -173,7 +171,6 @@ function SiteRoutes() {
   }
 
   function handleID(id) {
-    console.log(id);
     setJobID(id);
   }
 

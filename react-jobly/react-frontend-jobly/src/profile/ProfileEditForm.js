@@ -33,7 +33,7 @@ function EditProfileForm({ editUser, errorMessage }) {
   }
 
   const user = currentUser.data.user;
-  console.log(user.username);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     editUser({

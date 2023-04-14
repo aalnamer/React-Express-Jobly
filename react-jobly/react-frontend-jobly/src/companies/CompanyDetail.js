@@ -13,7 +13,6 @@ function CompanyDetail({ id }) {
   const [jobID, setJobID] = useState();
 
   const handleSubmit = (apply) => {
-    console.log(apply);
     id({ id: apply });
   };
 

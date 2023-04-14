@@ -6,7 +6,7 @@ import UserContext from "./context/UsersContext";
 function NavBar() {
   const storage = localStorage.getItem("username");
   const { currentUser, setCurrentUser } = useContext(UserContext);
-  console.log(currentUser, " NAVBAR");
+
   const logout = () => {
     localStorage.clear();
     setCurrentUser();
