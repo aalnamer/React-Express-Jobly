@@ -1,17 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { NavLink, Navigate, Routes, useNavigate } from "react-router-dom";
 import "./NavBar.css";
 import UserContext from "./context/UsersContext";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, selectUser } from "./reduxData/userSlice";
+import { updateapplicationsItems } from "./reduxData/applicationsSlice";
 
 function NavBar() {
   const storage = localStorage.getItem("username");
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
 
-  const logout = () => {
+  console.log(user);
+
+  function handleSignOut() {
     localStorage.clear();
-    setCurrentUser();
+    dispatch(logout());
+    dispatch(updateapplicationsItems([]));
     navigate("/");
-  };
+  }
 
   const navigate = useNavigate();
 
@@ -20,7 +27,7 @@ function NavBar() {
       <NavLink exact to={"/"}>
         Home
       </NavLink>
-      {currentUser === undefined ? (
+      {user == undefined ? (
         <nav className="log">
           <NavLink exact to={"/login"}>
             Login
@@ -41,9 +48,7 @@ function NavBar() {
           <NavLink exact to={"/profile"}>
             {storage}
           </NavLink>
-          <NavLink onClick={logout} exact to={"/"}>
-            Log Out
-          </NavLink>
+          <NavLink onClick={handleSignOut}>Log Out</NavLink>
         </nav>
       )}
     </nav>

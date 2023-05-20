@@ -3,14 +3,15 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import JoblyApi from "../api";
 import "./CompanyDetail.css";
 import UserContext from "../context/UsersContext";
+import { useSelector } from "react-redux";
+import { selectUser } from "../reduxData/userSlice";
 
 function CompanyDetail({ id }) {
-  const { currentUser } = useContext(UserContext);
+  const user = useSelector(selectUser);
   const navigate = useNavigate();
   const { handle } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [companyDetail, setCompanyDetail] = useState();
-  const [jobID, setJobID] = useState();
 
   const handleSubmit = (apply) => {
     id({ id: apply });
@@ -29,7 +30,7 @@ function CompanyDetail({ id }) {
     getCompanies();
   }, []);
 
-  if (!currentUser) {
+  if (user == undefined) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -55,63 +56,68 @@ function CompanyDetail({ id }) {
   });
 
   const jobs = companyDetail.jobs;
+
   const jobData = jobs.map((job) => (
-    <div key={job.id} className="grid-container">
-      <div className="head">
-        ID
-        <div className="grid-item-1"> {job.id}</div>
+    <div key={job.id} className="job-item">
+      <div className="job-details">
+        <div className="job-detail-row">
+          <div className="job-detail-label">ID:</div>
+          <div className="job-detail-value">{job.id}</div>
+        </div>
+        <div className="job-detail-row">
+          <div className="job-detail-label">Job Title:</div>
+          <div className="job-detail-value">{job.title}</div>
+        </div>
+        <div className="job-detail-row">
+          <div className="job-detail-label">Salary:</div>
+          <div className="job-detail-value">{formatter.format(job.salary)}</div>
+        </div>
+        <div className="job-detail-row">
+          <div className="job-detail-label">Equity:</div>
+          <div className="job-detail-value">{job.equity}</div>
+        </div>
       </div>
-      <div>
-        Job Title
-        <div className="grid-item-2"> {job.title}</div>
-      </div>
-      <div>
-        Salary
-        <div className="grid-item-3">{formatter.format(job.salary)}</div>
-      </div>
-      <div>
-        Equity
-        <div className="grid-item-4"> {job.equity}</div>
-      </div>
-      <div>
-        <Link to={`/jobs/${job.id}`} key={job.id}>
-          {" "}
-          Job Detail
+      <div className="job-action">
+        {user.data.user.applications.includes(job.id) ? (
+          <div className="applied-label">Applied</div>
+        ) : (
+          <button
+            className="apply-button"
+            value={job.id}
+            onClick={() => handleSubmit(job.id)}
+          >
+            Apply
+          </button>
+        )}
+        <Link to={`/jobs/${job.id}`} key={job.id} className="details-link">
+          Job Details
         </Link>
       </div>
-      {currentUser.data.user.applications.includes(job.id) ? (
-        <div style={{ color: "green" }}>Applied </div>
-      ) : (
-        <button
-          value={job.id}
-          onClick={() => {
-            handleSubmit(job.id);
-          }}
-        >
-          {" "}
-          Apply
-        </button>
-      )}
     </div>
   ));
 
   return (
-    <div>
-      <h1>{companyDetail.name}</h1>
-      <img src={companyDetail.logo} />
-      <p>Description: {companyDetail.description}</p>
-      <p>We have: {companyDetail.numEmployees} Employees! </p>
+    <div className="company-detail-container">
+      <h1 className="company-name">{companyDetail.name}</h1>
+      <img
+        src={companyDetail.logo}
+        alt="Company Logo"
+        className="company-logo"
+      />
+      <p className="company-description">
+        Description: {companyDetail.description}
+      </p>
+      <p className="company-employees">
+        We have: {companyDetail.numEmployees} Employees!
+      </p>
 
-      <div>Jobs Currently Avaliable</div>
-      <br></br>
-      <div>{jobData}</div>
+      <div className="jobs-heading">Jobs Currently Available</div>
+      <button className="go-back-button" onClick={() => navigate("/companies")}>
+        Go Back
+      </button>
+      <div className="job-list">{jobData}</div>
 
-      <button
-        onClick={() => {
-          navigate("/companies");
-        }}
-      >
-        {" "}
+      <button className="go-back-button" onClick={() => navigate("/companies")}>
         Go Back
       </button>
     </div>

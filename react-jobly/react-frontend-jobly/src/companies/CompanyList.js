@@ -1,63 +1,54 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import "./CompaniesList.css";
 import useAxios from "../hooks/useAxios";
 import { Link, useNavigate } from "react-router-dom";
 import JoblyApi from "../api";
 import UserContext from "../context/UsersContext";
 
-const BASE_URL = "http://localhost:3001/companies";
-
 const CompanyList = () => {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
   const user = localStorage.getItem("username");
-  const data = useAxios(BASE_URL);
+  const [data, setData] = useState(null);
   const [search, setSearch] = useState("");
 
-  if (!currentUser) {
-    return (
-      <div>
-        <h1>Please Sign in first</h1>
-        <p>
-          <button
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            Go Back
-          </button>
-        </p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    async function getCompanyData() {
+      let companies = await JoblyApi.getAllCompanies();
+      console.log(companies);
+      setData(companies);
+    }
+    getCompanyData();
+  }, []);
 
-  if (data.isLoading) {
+  if (!data) {
     return <div>Loading ... </div>;
   }
   if (data.error) {
     return <div>Sorry, something went wrong </div>;
   }
 
-  const companies = data.response.data.companies;
-
   return (
-    <div className="App">
-      <div>
-        <div className="search">
-          <input
-            type="text"
-            placeholder="Search Name"
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="grid-container">
-          {companies
-            .filter((company) => company.name.toLowerCase().includes(search))
-            .map((company) => (
-              <Link to={`/companies/${company.handle}`} key={company.handle}>
-                <div className="grid-item">{company.name}</div>
-              </Link>
-            ))}
-        </div>
+    <div className="company-list">
+      <div className="search">
+        <input
+          type="text"
+          placeholder="Search Name"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+      <div className="grid-container">
+        {data
+          .filter((company) => company.name.toLowerCase().includes(search))
+          .map((company) => (
+            <Link
+              to={`/companies/${company.handle}`}
+              key={company.handle}
+              className="company-item"
+            >
+              <div className="company-name">{company.name}</div>
+              <div>&rarr;</div>
+            </Link>
+          ))}
       </div>
     </div>
   );

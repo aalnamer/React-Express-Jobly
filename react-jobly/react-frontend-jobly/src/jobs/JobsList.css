@@ -1,4 +1,4 @@
-.company-list {
+.job-list {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
@@ -14,7 +14,13 @@
   font-size: 16px;
 }
 
-.company-item {
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+}
+
+.job-item {
   display: flex;
   align-items: center;
   padding: 10px;
@@ -26,15 +32,13 @@
   color: #333;
 }
 
-.company-item:hover {
+.job-item:hover {
   background-color: #f5f5f5;
 }
 
-.company-name {
+.job-name {
   flex: 1;
   margin-left: 10px;
   font-size: 16px;
   font-weight: bold;
 }
-
-/* Rest of the CSS styles... */

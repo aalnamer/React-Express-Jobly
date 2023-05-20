@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserContext from "../context/UsersContext";
 import "./Profile.css";
+import { useSelector } from "react-redux";
+import { selectUser } from "../reduxData/userSlice";
 
 function Profile() {
-  const { currentUser } = useContext(UserContext);
-
+  const user = useSelector(selectUser);
   const navigate = useNavigate();
 
-  if (currentUser === undefined) {
+  console.log(user == undefined);
+  if (user == undefined) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -25,51 +27,37 @@ function Profile() {
     );
   }
 
-  const currentData = currentUser.data.user;
+  const userData = user.data.user;
 
   return (
-    <div>
-      <h1>Welcome, {currentData.firstName} </h1>
-      <div>
-        Full Name: {currentData.firstName} {currentData.lastName}
+    <div className="container">
+      <h1 className="heading">Welcome, {userData.firstName}</h1>
+      <div className="info-group">
+        <div>
+          Full Name: {userData.firstName} {userData.lastName}
+        </div>
+        <div>Username: {userData.username}</div>
+        <div>Email: {userData.email}</div>
       </div>
-      <br></br>
-      <div>Username: {currentData.username}</div>
-      <br></br>
-      <div>Email: {currentData.email}</div>
-      <div>
-        <br></br>
-        Current Applications:{" "}
+      <div className="button-group">
+        <button onClick={() => navigate("/")}>Go Back</button>
+        <button onClick={() => navigate("/profile/edit")}>Edit Profile</button>
+      </div>
+
+      <div className="applications">
+        <h3>Current Applications:</h3>
         <div className="grid-container">
-          {currentData.applications.map((job) => (
-            <div key={job}>
-              <br></br>
-              ID: {job}
-              <div className="grid-item">
-                <Link to={`/jobs/${job}`}>Details</Link>
+          {userData.applications?.map((job) => (
+            <div className="application-item" key={job}>
+              <div className="application-id">ID: {job}</div>
+              <div className="application-details">
+                <Link to={`/jobs/${job}`}>
+                  <button className="details-button">Details</button>
+                </Link>
               </div>
             </div>
           ))}
         </div>
-      </div>
-      <button
-        onClick={() => {
-          navigate("/");
-        }}
-      >
-        {" "}
-        Go Back
-      </button>
-      <div>
-        <br></br>
-        <button
-          onClick={() => {
-            navigate("/profile/edit");
-          }}
-        >
-          {" "}
-          Edit Profile
-        </button>
       </div>
     </div>
   );

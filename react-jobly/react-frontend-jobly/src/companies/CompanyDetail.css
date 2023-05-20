@@ -1,7 +1,112 @@
-.grid-container {
-  justify-content: center;
-  display: grid;
-  grid-template-columns: repeat(6, 200px);
-  grid-auto-rows: minmax(150px, auto);
-  grid-gap: 20px;
+.company-detail-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.company-name {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.company-logo {
+  max-width: 200px;
+  margin-bottom: 10px;
+}
+
+.company-description {
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.company-employees {
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.jobs-heading {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.job-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.job-details {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.job-detail-row {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.job-detail-label {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #333;
+}
+
+.job-action {
+  display: flex;
+  align-items: center;
+}
+
+.apply-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #007bff;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.details-link {
+  padding: 8px 16px;
+  background-color: #f9f9f9;
+  color: #007bff;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 1px solid #007bff;
+  transition: background-color 0.3s ease;
+}
+
+.details-link:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.applied-label {
+  color: green;
+  margin-right: 10px;
+}
+
+.go-back-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  background-color: #007bff;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.go-back-button:hover {
+  background-color: #0056b3;
 }

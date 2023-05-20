@@ -1,21 +1,56 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import "./ProfileEditForm.css";
 import { useNavigate } from "react-router-dom";
 import useFields from "../hooks/useFields";
 import UserContext from "../context/UsersContext";
+import { useDispatch, useSelector } from "react-redux";
+import { login, selectUser } from "../reduxData/userSlice";
+import JoblyApi from "../api";
 
-function EditProfileForm({ editUser, errorMessage }) {
+function EditProfileForm() {
+  const user = useSelector(selectUser);
+  console.log(user);
+  const dispatch = useDispatch();
   const { currentUser, setCurrentUser } = useContext(UserContext);
-  const storage = localStorage.getItem("username");
+  const [usernameValue, setUsernameValue] = useState("");
+  const [firstNameValue, setFirstNameValue] = useState("");
+  const [lastNameValue, setLastNameValue] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+
   const navigate = useNavigate();
 
-  const [formData, handleChange] = useFields({
-    username: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-  });
+  useEffect(() => {
+    if (user) {
+      setUsernameValue(user.data.user.username);
+      setFirstNameValue(user.data.user.firstName);
+      setLastNameValue(user.data.user.lastName);
+      setEmailValue(user.data.user.email);
+    }
+  }, [user]);
 
-  if (currentUser === undefined) {
+  const updateData = {
+    username: usernameValue,
+    firstName: firstNameValue,
+    lastName: lastNameValue,
+    email: emailValue,
+  };
+  async function handleUpdate(e) {
+    e.preventDefault();
+    try {
+      let user = await JoblyApi.updateUser(
+        updateData.username,
+        updateData.firstName,
+        updateData.lastName,
+        updateData.email
+      );
+      console.log(user.data.username);
+      localStorage.setItem("username", user.data.username);
+      dispatch(login(user.data.username));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  if (user == undefined) {
     return (
       <div>
         <h1>Please Sign in first</h1>
@@ -32,75 +67,64 @@ function EditProfileForm({ editUser, errorMessage }) {
     );
   }
 
-  const user = currentUser.data.user;
+  function handleChange(event) {
+    const { name, value } = event.target;
+    const setters = {
+      username: setUsernameValue,
+      firstName: setFirstNameValue,
+      lastName: setLastNameValue,
+      email: setEmailValue,
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    editUser({
-      username: user.username,
-      password: formData.password,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-    });
-    navigate("/");
-  };
-
+    const setter = setters[name];
+    if (setter) {
+      setter(value);
+    }
+  }
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <p></p>
-        <p>
-          <label>
-            {" "}
-            First Name
-            <input
-              name="firstName"
-              type="text"
-              value={formData.firstName}
-              onChange={handleChange}
-            />
-          </label>
-        </p>
-        <p>
-          <label>
-            {" "}
-            Last Name
-            <input
-              name="lastName"
-              type="text"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
-          </label>
-        </p>
+    <div className="container">
+      <form onSubmit={handleUpdate}>
+        <div className="form-group">
+          <span>Username</span>
+          <input
+            name="username"
+            value={usernameValue}
+            onChange={handleChange}
+            placeholder="Username"
+          />
+        </div>
+        <div className="form-group">
+          <span>First Name</span>
+          <input
+            name="firstName"
+            value={firstNameValue}
+            onChange={handleChange}
+            placeholder="First Name"
+          />
+        </div>
+        <div className="form-group">
+          <span>Last Name</span>
+          <input
+            name="lastName"
+            value={lastNameValue}
+            onChange={handleChange}
+            placeholder="Last Name"
+          />
+        </div>
+        <div className="form-group">
+          <span>Email</span>
+          <input
+            name="email"
+            value={emailValue}
+            onChange={handleChange}
+            placeholder="Email"
+          />
+        </div>
 
-        <p>
-          <label>
-            {" "}
-            Email
-            <input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </label>
-        </p>
-
-        <p>
-          <button>Edit</button>
-        </p>
-        <p>
-          <button
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            {" "}
-            Go Back
-          </button>
-        </p>
+        <div className="button-group">
+          <button type="submit">Update Profile</button>
+          <button onClick={() => navigate("/")}>Go Back</button>
+        </div>
       </form>
     </div>
   );
