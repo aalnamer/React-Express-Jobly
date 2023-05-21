@@ -3,19 +3,30 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import JoblyApi from "../api";
 import "./CompanyDetail.css";
 import UserContext from "../context/UsersContext";
-import { useSelector } from "react-redux";
-import { selectUser } from "../reduxData/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { login, selectUser } from "../reduxData/userSlice";
+import { updateapplicationsItems } from "../reduxData/applicationsSlice";
 
 function CompanyDetail({ id }) {
   const user = useSelector(selectUser);
+  console.log(user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const { handle } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [companyDetail, setCompanyDetail] = useState();
+  console.log(companyDetail);
 
-  const handleSubmit = (apply) => {
-    id({ id: apply });
-  };
+  async function handleApply(id) {
+    const res = await JoblyApi.applyJob(localStorage.getItem("username"), id);
+    console.log(res);
+    const data = await JoblyApi.getUser(localStorage.getItem("username"));
+    dispatch(login(data));
+    if (data.applications) {
+      dispatch(updateapplicationsItems([...data.applications]));
+    }
+  }
 
   useEffect(() => {
     async function getCompanies() {
@@ -84,7 +95,7 @@ function CompanyDetail({ id }) {
           <button
             className="apply-button"
             value={job.id}
-            onClick={() => handleSubmit(job.id)}
+            onClick={() => handleApply(job.id)}
           >
             Apply
           </button>
@@ -99,11 +110,7 @@ function CompanyDetail({ id }) {
   return (
     <div className="company-detail-container">
       <h1 className="company-name">{companyDetail.name}</h1>
-      <img
-        src={companyDetail.logo}
-        alt="Company Logo"
-        className="company-logo"
-      />
+
       <p className="company-description">
         Description: {companyDetail.description}
       </p>

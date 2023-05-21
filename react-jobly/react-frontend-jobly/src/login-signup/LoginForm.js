@@ -19,8 +19,22 @@ function LoginForm() {
   const user = useSelector(selectUser);
   console.log(user);
   const currentjobs = useSelector(selectapplicationsItems);
+  const [errors, setErrors] = useState({});
 
-  console.log(currentjobs);
+  function validateForm() {
+    const errors = {};
+
+    if (!usernameValue.trim()) {
+      errors.username = "Username is required";
+    }
+
+    if (!passwordValue.trim()) {
+      errors.password = "Password is required";
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
 
   const data = {
     username: usernameValue,
@@ -29,6 +43,10 @@ function LoginForm() {
 
   async function handleSignIn(e) {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       let res = await JoblyApi.login(data.username, data.password);
       console.log(res.data.token, "SIGNING IN");
@@ -42,7 +60,11 @@ function LoginForm() {
       }
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 401) {
+        setErrors({ login: "Invalid username/password" });
+      } else {
+        console.log(error);
+      }
     }
   }
 
@@ -83,12 +105,16 @@ function LoginForm() {
       <div className="login-form">
         <h1>Login</h1>
         <form onSubmit={handleSignIn}>
+          {errors.username && <div className="error">{errors.username}</div>}
+          {errors.password && <div className="error">{errors.password}</div>}
+          {errors.login && <div className="error">{errors.login}</div>}
           <input
             name="username"
             value={usernameValue}
             onChange={handleChange}
             placeholder="Username"
           />
+
           <input
             name="password"
             value={passwordValue}
@@ -96,8 +122,12 @@ function LoginForm() {
             placeholder="Password"
             type="password"
           />
+
           <button type="submit">Login</button>
         </form>
+        <div> Demo Account: </div>
+        <div>Username: demo</div>
+        <div>Password: password</div>
       </div>
     </div>
   );

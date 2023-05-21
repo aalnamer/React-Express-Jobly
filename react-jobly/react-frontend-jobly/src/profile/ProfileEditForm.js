@@ -16,6 +16,7 @@ function EditProfileForm() {
   const [firstNameValue, setFirstNameValue] = useState("");
   const [lastNameValue, setLastNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
+  console.log(localStorage.getItem("username"));
 
   const navigate = useNavigate();
 

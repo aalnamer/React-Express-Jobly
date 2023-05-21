@@ -1,4 +1,4 @@
-.home-container {
+/* .home-container {
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -42,4 +42,74 @@
 
 .home-button:hover {
   background-color: #0d8bf2;
+} */
+
+.landing-page {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    to bottom,
+    rgba(241, 241, 241, 0) 0%,
+    rgba(241, 241, 241, 1) 80%
+  );
+}
+
+.home-container {
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+  margin-top: -60px;
+}
+
+.home-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.home-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-title {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.home-description {
+  margin-bottom: 20px;
+}
+
+.home-links {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.home-button {
+  padding: 10px 20px;
+  background-color: #01959a;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.home-button:hover {
+  background-color: #017f85;
 }

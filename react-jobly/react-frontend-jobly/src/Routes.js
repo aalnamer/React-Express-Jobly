@@ -16,6 +16,7 @@ import EditProfileForm from "./profile/ProfileEditForm";
 import { useDispatch, useSelector } from "react-redux";
 import { login, selectUser } from "./reduxData/userSlice";
 import { updateapplicationsItems } from "./reduxData/applicationsSlice";
+import NavBar from "./NavBar";
 
 function SiteRoutes() {
   const navigate = useNavigate();
@@ -56,25 +57,28 @@ function SiteRoutes() {
   }
 
   return (
-    <Routes>
-      <Route exact path="/companies" element={<Companies />}></Route>
-      <Route
-        exact
-        path="/companies/:handle"
-        element={<CompanyDetail />}
-      ></Route>
-      <Route exact path="/jobs" element={<Jobs />}></Route>
-      <Route exact path="/jobs/:id" element={<JobDetail />}></Route>
-      <Route exact path="/login" element={<LoginForm />}></Route>
+    <>
+      <NavBar />
+      <Routes>
+        <Route exact path="/companies" element={<Companies />}></Route>
+        <Route
+          exact
+          path="/companies/:handle"
+          element={<CompanyDetail />}
+        ></Route>
+        <Route exact path="/jobs" element={<Jobs />}></Route>
+        <Route exact path="/jobs/:id" element={<JobDetail />}></Route>
+        <Route exact path="/login" element={<LoginForm />}></Route>
 
-      <Route exact path="/signup" element={<SignUpForm />}></Route>
+        <Route exact path="/signup" element={<SignUpForm />}></Route>
 
-      <Route exact path="/profile" element={<Profile />}></Route>
-      <Route exact path="/profile/edit" element={<EditProfileForm />}></Route>
+        <Route exact path="/profile" element={<Profile />}></Route>
+        <Route exact path="/profile/edit" element={<EditProfileForm />}></Route>
 
-      <Route exact path="/" element={<Home />}></Route>
-      <Route exact path="*" element={<NotFound />}></Route>
-    </Routes>
+        <Route exact path="/" element={<Home />}></Route>
+        <Route exact path="*" element={<NotFound />}></Route>
+      </Routes>
+    </>
   );
 }
 

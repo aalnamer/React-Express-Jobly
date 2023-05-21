@@ -6,6 +6,7 @@
 }
 
 .signup-form {
+  position: relative; /* Add this line to set the form as a positioning context */
   max-width: 400px;
   padding: 40px;
   background-color: #f5f5f5;

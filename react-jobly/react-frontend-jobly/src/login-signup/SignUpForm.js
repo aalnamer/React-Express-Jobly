@@ -29,31 +29,75 @@ function SignUpForm() {
 
   async function handleSignIn(event) {
     event.preventDefault();
-    try {
-      let res = await JoblyApi.signUp(
-        registerData.username,
-        registerData.password,
-        registerData.firstName,
-        registerData.lastName,
-        registerData.email
-      );
+    const isValid = validateForm();
+    if (isValid) {
+      try {
+        let res = await JoblyApi.signUp(
+          registerData.username,
+          registerData.password,
+          registerData.firstName,
+          registerData.lastName,
+          registerData.email
+        );
 
-      localStorage.setItem("token", res.data.token);
-      let user = await JoblyApi.getUser(usernameValue);
-      localStorage.setItem("username", user.data.user.username);
-      console.log(user);
+        localStorage.setItem("token", res.data.token);
+        let user = await JoblyApi.getUser(usernameValue);
+        localStorage.setItem("username", user.data.user.username);
+        console.log(user);
 
-      dispatch(login(user.data.user));
-      if (user.data.user.applications) {
-        dispatch(updateapplicationsItems([...user.data.user.applications]));
+        dispatch(login(user.data.user));
+        if (user.data.user.applications) {
+          dispatch(updateapplicationsItems([...user.data.user.applications]));
+        }
+        navigate("/");
+      } catch (err) {
+        setFormErrors(err.response?.data?.errors || []);
+        // err?.forEach((error) => {
+        //   toast.error(error);
+        // });
       }
-      navigate("/");
-    } catch (err) {
-      setFormErrors(err);
-      // err?.forEach((error) => {
-      //   toast.error(error);
-      // });
     }
+  }
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateForm() {
+    const errors = {};
+
+    if (!usernameValue.trim()) {
+      errors.username = "Username is required";
+    } else if (usernameValue.length < 1 || usernameValue.length > 30) {
+      errors.username = "Username should be between 1 and 30 characters";
+    }
+
+    if (!passwordValue.trim()) {
+      errors.password = "Password is required";
+    } else if (passwordValue.length < 5 || passwordValue.length > 20) {
+      errors.password = "Password should be between 5 and 20 characters";
+    }
+
+    if (!firstNameValue.trim()) {
+      errors.firstName = "First Name is required";
+    } else if (firstNameValue.length < 1 || firstNameValue.length > 30) {
+      errors.firstName = "First Name should be between 1 and 30 characters";
+    }
+
+    if (!lastNameValue.trim()) {
+      errors.lastName = "Last Name is required";
+    } else if (lastNameValue.length < 1 || lastNameValue.length > 30) {
+      errors.lastName = "Last Name should be between 1 and 30 characters";
+    }
+
+    if (!emailValue.trim()) {
+      errors.email = "Email is required";
+    } else if (!validateEmail(emailValue)) {
+      errors.email = "Invalid email format";
+    }
+
+    setFormErrors(errors);
+
+    return Object.keys(errors).length === 0;
   }
 
   function handleChange(event) {
@@ -71,11 +115,17 @@ function SignUpForm() {
     }
   }
 
+  console.log(formErrors);
   return (
     <div className="signup-container">
       <div className="signup-form">
         <h1>Create An Account</h1>
 
+        {Object.entries(formErrors).map(([fieldName, errorMessage]) => (
+          <div className="error" key={fieldName}>
+            {errorMessage}
+          </div>
+        ))}
         <form onSubmit={handleSignIn}>
           <input
             name="username"
