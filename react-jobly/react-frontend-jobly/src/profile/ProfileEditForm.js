@@ -9,7 +9,7 @@ import JoblyApi from "../api";
 
 function EditProfileForm() {
   const user = useSelector(selectUser);
-  console.log(user);
+
   const dispatch = useDispatch();
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const [usernameValue, setUsernameValue] = useState("");
@@ -17,12 +17,12 @@ function EditProfileForm() {
   const [lastNameValue, setLastNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   console.log(localStorage.getItem("username"));
+  console.log(localStorage.getItem("token"));
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      setUsernameValue(user.data.user.username);
       setFirstNameValue(user.data.user.firstName);
       setLastNameValue(user.data.user.lastName);
       setEmailValue(user.data.user.email);
@@ -30,7 +30,6 @@ function EditProfileForm() {
   }, [user]);
 
   const updateData = {
-    username: usernameValue,
     firstName: firstNameValue,
     lastName: lastNameValue,
     email: emailValue,
@@ -39,7 +38,6 @@ function EditProfileForm() {
     e.preventDefault();
     try {
       let user = await JoblyApi.updateUser(
-        updateData.username,
         updateData.firstName,
         updateData.lastName,
         updateData.email
@@ -85,15 +83,6 @@ function EditProfileForm() {
   return (
     <div className="container">
       <form onSubmit={handleUpdate}>
-        <div className="form-group">
-          <span>Username</span>
-          <input
-            name="username"
-            value={usernameValue}
-            onChange={handleChange}
-            placeholder="Username"
-          />
-        </div>
         <div className="form-group">
           <span>First Name</span>
           <input

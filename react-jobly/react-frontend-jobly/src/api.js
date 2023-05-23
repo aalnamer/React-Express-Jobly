@@ -86,15 +86,24 @@ class JoblyApi {
 
     return res;
   }
-  static async updateUser(username, firstName, lastName, email) {
-    let orignalUsername = localStorage.getItem("username");
 
-    let res = await axios.patch(`${BASE_URL}/users/${orignalUsername}`, {
-      username,
-      firstName,
-      lastName,
-      email,
-    });
+  static async updateUser(firstName, lastName, email) {
+    let orignalUsername = localStorage.getItem("username");
+    console.log(localStorage.getItem("token"));
+
+    let res = await axios.patch(
+      `${BASE_URL}/users/${orignalUsername}`,
+      {
+        firstName,
+        lastName,
+        email,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
     return res;
   }
